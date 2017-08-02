@@ -23,6 +23,7 @@
       !MS specific modules
       USE TBCS 
       USE ATSDATA
+	  USE GRAVEC																			!MT
       USE UserSpecifiedOutputTime 
       USE SutraStorage
       USE MSErrorHandler
@@ -81,6 +82,9 @@
           RPTIME1, &
           RP, &
           do1
+!		  do1, &																			!MT
+!		  HEAD                                                                              !MT
+!		  RHOT																				!MT
         REAL (DP) :: &
           ObsTimeDiff, &
           EPSILON=1E-10
@@ -400,11 +404,20 @@
 !      DO K = 1, NSPE 
 !          RCIT (1:NN) = RCIT (1:NN) + DRWDU (K) * (UITER (1:NN, K) - URHOW0 (K) )                                                             
 !      ENDDO 
+!.....ORIGINAL
       DO I = 1, NN
         DO K = 1, NSPE 
-          RCIT(I) = RCIT(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )                                                             
+			RCIT(I) = RCIT(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )           			
         END DO 
       END DO
+!.....MODIFIED BY MT 13.9.2016 - FIX T IN RHO TERMS TO ASSUME DENSITY DOES NOT CHANGE IN HEATED CASES		
+!      DO I = 1, NN
+!        DO K = 1, NSPE 
+!        	IF (K.EQ.NESP) CYCLE															!MT
+!			RCIT(I) = RCIT(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )      				!MT     			
+!			RCIT(I) = RCIT(I) + DRWDU(NESP) * ( 15 - URHOW0(NESP))							!MT     
+!        END DO 
+!      END DO	  
 !                                                                       
 !.....SPECIFIED PRESSURE FLUXES                                         
 !      FORALL (IP = 1:NPBC) 
@@ -470,12 +483,21 @@
 !      DO K = 1, NSPE 
 !        RCIT (1:NN) = RCIT (1:NN) + DRWDU (K) * (UITER (1:NN, K) - URHOW0(K) )                                                             
 !      ENDDO 
+!.....ORIGINAL
       DO I = 1, NN
         DO K = 1, NSPE 
-          RCIT(I) = RCIT(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )                                                             
+		  RCIT(I) = RCIT(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )           			
         END DO
       END DO 
-!                                                                       
+!.....MODIFIED BY MT 13.9.2016 - FIX T IN RHO TERMS TO ASSUME DENSITY DOES NOT CHANGE IN HEATED CASES				
+!      DO I = 1, NN                                                                             !MT
+!        DO K = 1, NSPE                                                                         !MT
+!          IF (K.EQ.NESP) CYCLE																	!MT		
+!          RCIT(I) = RCIT(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )    						!MT!
+!		  RCIT(I) = RCIT(I) + DRWDU(NESP) * ( 15 - URHOW0(NESP))								!MT                                                         
+!        END DO                                                                                 !MT
+!      END DO                                                                                   !MT
+!           
       GOTO 2600 
 !                                                                       
 !.....SHIFT AND SET VECTORS FOR TIME STEP WITH U SOLUTION ONLY          
@@ -568,7 +590,8 @@
           !U ONLY - CYCLE LOOP
           ELSE IF(TSEC-StartUTime(K)<=0.AND.(U_ML(K)-1)==1) THEN
             write(*,*) 'Note: skipping U('//trim(adjustl(Val2Char(k)))//') solution at time ['//trim(adjustl(Val2Char(TSEC)))//']'
-            write(fSMY,'(1x,a)') 'Note: skipping U('//trim(adjustl(Val2Char(k)))//') solution at time ['//trim(adjustl(Val2Char(TSEC)))//']'
+            write(fSMY,'(1x,a)') 'Note: skipping U('//trim(adjustl(Val2Char(k)))//') solution at time &
+['//trim(adjustl(Val2Char(TSEC)))//']'
             CYCLE
           END IF
         END IF
@@ -592,7 +615,8 @@
             GO TO 3300
           CASE DEFAULT
             MSErrorValue%cDataSet='SUT'
-            call ErrorIO('SUTRA solution: Internal error testing if P solution (ML-1 must be -1, 0, 1) ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
+            call ErrorIO('SUTRA solution: Internal error testing if P solution (ML-1 must be -1, 0, 1) ML-1 = &
+['//trim(adjustl(Val2Char(ML-1)))//']')
          END SELECT
 
  3000    CALL ZERO (PMAT, MATDIM, 0.0D0) 
@@ -608,7 +632,8 @@
             GO TO 3300
           CASE DEFAULT
             MSErrorValue%cDataSet='SUT'
-            call ErrorIO('SUTRA solution: Internal error testing if U solution (ML-1 must be -1, 0, 1) ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
+            call ErrorIO('SUTRA solution: Internal error testing if U solution (ML-1 must be -1, 0, 1) &
+ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
          END SELECT
 3300 &
          SELECT CASE (NOUMAT)
@@ -620,7 +645,8 @@
             GO TO 3375
           CASE DEFAULT
             MSErrorValue%cDataSet='SUT'
-            call ErrorIO('SUTRA solution: Internal error (NOUMAT must be -1, 0, 1) NOUMAT = ['//trim(adjustl(Val2Char(NOUMAT)))//']')
+            call ErrorIO('SUTRA solution: Internal error (NOUMAT must be -1, 0, 1) NOUMAT = &
+['//trim(adjustl(Val2Char(NOUMAT)))//']')
          END SELECT
  3350    CALL ZERO(UMAT, MATDIM, 0.0D0) 
  3375    CALL ZERO(CVEC, NN, 0.0D0) 
@@ -691,7 +717,8 @@
              GO TO 5500
            CASE DEFAULT
              MSErrorValue%cDataSet='SUT'
-             call ErrorIO('SUTRA solution: Internal error initializing P solution (ML-1 must be -1, 0, 1) ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
+             call ErrorIO('SUTRA solution: Internal error initializing P solution (ML-1 must be -1, 0, 1) &
+ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
          END SELECT
 !
  5000    KKK = 000000 
@@ -722,7 +749,8 @@
             GO TO 5500
           CASE DEFAULT
             MSErrorValue%cDataSet='SUT'
-            call ErrorIO('SUTRA solution: Internal error initializing U solution (ML-1 must be -1, 0, 1) ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
+            call ErrorIO('SUTRA solution: Internal error initializing U solution (ML-1 must be -1, 0, 1) &
+ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
          END SELECT
 !                                                                       
  5500    KKK = 000000 
@@ -845,7 +873,8 @@
           GO TO 7150
         CASE DEFAULT
           MSErrorValue%cDataSet='SUT'
-          call ErrorIO('SUTRA solution: Internal error testing for P convergence (ML-1 must be -1, 0, 1) ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
+          call ErrorIO('SUTRA solution: Internal error testing for P convergence (ML-1 must be -1, 0, 1) &
+ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
        END SELECT
  7050 DO 7100 I = 1, NN 
          RP = DABS( PVEC(I) - PITER(I) ) 
@@ -865,7 +894,8 @@
           GO TO 7200
         CASE DEFAULT
           MSErrorValue%cDataSet='SUT'
-          call ErrorIO('SUTRA solution: Internal error testing for U convergence (ML-1 must be -1, 0, 1) ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
+          call ErrorIO('SUTRA solution: Internal error testing for U convergence (ML-1 must be -1, 0, 1) &
+ML-1 = ['//trim(adjustl(Val2Char(ML-1)))//']')
        END SELECT
  7200 DO 7300 I = 1, NN 
          DO 7270 K = 1, NSPE 
@@ -1111,7 +1141,15 @@
 !.....END TIME STEP ****************************************************
 ! **********************************************************************
 !                                                                       
-!                                                                       
+!.........Calculate and print HEAD at last timestep											!MT
+!     IF (IT.EQ.ITMAX) then                                  								!MT			
+!          do I=1,NN                                                                        !MT         
+!               HEAD(I)=( PVEC(I) / (RHO(I) * (-GRAVY))) + Y(I)                            !MT   		
+!               HEAD(I)=( PVEC(I) / (RCIT(I) * (-GRAVY))) + Y(I)                            !MT   		
+!          end do                                                                           !MT         
+!          WRITE(3,'(2F15.7)') (HEAD(I),I=1,NN)                                             !MT
+!     END IF                                                                                !MT
+!                                                                         
 !.....COMPLETE OUTPUT AND TERMINATE SIMULATION                          
 !                                                                       
       WRITE ( * ,  * ) 'S I M U L A T I O N   E N D E D' 

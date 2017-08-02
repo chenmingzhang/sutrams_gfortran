@@ -143,7 +143,8 @@
      &   22X,'_________________________________')                       
 !
 !
-      call ErrorIO('SOURCE: Error the number of fluid sources, NIQP ['//trim(adjustl(Val2Char(NIQP)))//'], does not equal the number specified, NSOPI ['//trim(adjustl(Val2Char(NSOPI)))//']')
+      call ErrorIO('SOURCE: Error the number of fluid sources, &
+NIQP ['//trim(adjustl(Val2Char(NIQP)))//'], does not equal the number specified, NSOPI ['//trim(adjustl(Val2Char(NSOPI)))//']')
 !
 !.....WRITE REMAINING SPECIES TO UNIT fLST                                
   890 IF (NSPE.GT.1) WRITE (fLST, 900) NSPE, (trim(adjustl(SPNAME(K))), K = 2, NSPE) 

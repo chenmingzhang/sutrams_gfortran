@@ -136,7 +136,8 @@ subroutine ReadSorption14D()
      backspace(fINP)
      READ(fINP,*,iostat=ios) II, (ProdSorp(ii)%prodf0(K),ProdSorp(ii)%prods0(K), &
                                   ProdSorp(ii)%prodf1(K),ProdSorp(ii)%prods1(K),K=1,NSPE)
-     if (ios /= 0) call ErrorIO('Error specifying ProdSorp production data - error on line ['//trim(Val2Char(I))//'] of Data Set 14D')
+     if (ios /= 0) call ErrorIO('Error specifying ProdSorp production data - error on line &
+['//trim(Val2Char(I))//'] of Data Set 14D')
      !adjust if neccesary
       select case (ME)
 !.........FOR SOLUTE ONLY TRANSPORT:                                        

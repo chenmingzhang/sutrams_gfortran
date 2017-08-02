@@ -57,6 +57,7 @@
                 CloseFormattedFile
         contains
           integer function FindOpenUnit()
+            logical :: lOpened				!MT: added due to error during compiling with gfortran
             !find open file unit
             l_onunit=.true.
             do while (l_onunit)

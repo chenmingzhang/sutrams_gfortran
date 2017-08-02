@@ -103,7 +103,8 @@
      &   22X,'S I M U L A T I O N   H A L T E D'/                       &
      &   22X,'_________________________________')                       
 !
-      call ErrorIO('SRC1SPE: Error the number of solute sources, NIQU ['//trim(adjustl(Val2Char(NIQU)))//'], does not equal the number specified, NSOU ['//trim(adjustl(Val2Char(NSOU(1))))//']')
+      call ErrorIO('SRC1SPE: Error the number of solute sources, NIQU &
+['//trim(adjustl(Val2Char(NIQU)))//'], does not equal the number specified, NSOU ['//trim(adjustl(Val2Char(NSOU(1))))//']')
 !
 !.....ERROR IN ENERGY TRANSPORT SOURCES/SINKS                           
  1760 WRITE (fLST, 1770) NIQU, NSOU (1), 1, trim(adjustl(SPNAME(1)))
@@ -114,7 +115,8 @@
      &   22X,'S I M U L A T I O N   H A L T E D'/                       &
      &   22X,'_________________________________')                       
 !
-      call ErrorIO('SRC1SPE: Error the number of energy sources, NIQU ['//trim(adjustl(Val2Char(NIQU)))//'], does not equal the number specified, NSOU ['//trim(adjustl(Val2Char(NSOU(1))))//']')
+      call ErrorIO('SRC1SPE: Error the number of energy sources, NIQU &
+['//trim(adjustl(Val2Char(NIQU)))//'], does not equal the number specified, NSOU ['//trim(adjustl(Val2Char(NSOU(1))))//']')
 !
  1890 IF (IQSOUT.EQ. - 1) WRITE (fLST, 950) 
 !.....RETURN TO CALLING ROUTINE                                         

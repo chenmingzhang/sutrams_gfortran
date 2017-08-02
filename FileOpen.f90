@@ -40,10 +40,11 @@
 !
 !.....GET COMMAND LINE ARGUMENTS FOR COMPAQ COMPILER
 !     Comment out for all other compilers
-      narg = NARGS() - 1
+      narg = iargc() - 1
       i=0
-      do i = 1, narg
-        call getarg(i,ctmp,nlen)
+      do i = 1, narg					!!MT: revised due to error during compiling with gfortran, nargs() of ifort is equivalent to iargc() of gfortran (http://w.astro.berkeley.edu/~wright/f2c.html)
+!        call getarg(i,ctmp,nlen)
+        call getarg(i,ctmp)				!MT: revised due to error during compiling with gfortran (https://gcc.gnu.org/onlinedocs/gfortran/GETARG.html)
         select case(trim(adjustl(ctmp)))
           case ("-d", "-D")  !command line argument for output of special debug information to fLST
             lDebugData=.true.

@@ -103,7 +103,8 @@
          DO 8 M = 1, NCOLS5 
             IF (J5COL (M) .EQ.5) CPHORP = 'Y' 
             IF (J5COL (M) .EQ.6) CPTORC = 'Y' 
-            IF (J5COL (M) .EQ. (7 + NSPE-1) .AND. IUNSAT) CPSATU = 'Y' 
+!            IF (J5COL (M) .EQ. (7 + NSPE-1) .AND. IUNSAT) CPSATU = 'Y' 
+            IF (J5COL (M) .EQ. (7 + NSPE-1) .AND. IUNSAT.EQ.1) CPSATU = 'Y' 			!MT: revised due to error during compiling with gfortran
     8    END DO 
    10    CONTINUE 
          JT = JT + 1 

@@ -115,7 +115,7 @@
         INTEGER ::NCOLS5, NCOLS6 
         INTEGER, ALLOCATABLE::J5COL (:), J6COL (:) 
         !..VERSION 1.1 - ADDED H AND V
-        DATA K5SYM / 'N', 'X', 'Y', 'Z', 'P', 'U', 'S', 'R', 'H', 'V' /
+        DATA K5SYM / 'N', 'X', 'Y', 'Z', 'P', 'U', 'S', 'R', 'H', 'V'/
         DATA VARNK5 / 'NODE NUMBER', 'X-COORDINATE', 'Y-COORDINATE', 'Z-COORDINATE', &
                       'PRESSURE/HEAD', 'CONCENTRATION/TEMPERATURE', &
                       'SATURATION', 'DENSITY', 'TOTAL HEAD', 'NODAL VELOCITY' /                                                             
@@ -388,30 +388,30 @@
         IMPLICIT NONE
         CHARACTER (LEN=10), DIMENSION(0:10) :: &
           SOLWRD = &
-           (/ 'DIRECT', &
-              'CG', &
-              'GMRES', &
+           (/ 'DIRECT  ', &
+              'CG      ', &
+              'GMRES   ', &
               'ORTHOMIN', &
-              'UNKNOWN', &
-              '', &
-              '', &
-              '', &
-              '', &
-              '', &
-              '' /)
+              'UNKNOWN ', &
+              '        ', &
+              '        ', &
+              '        ', &
+              '        ', &
+              '        ', &
+              '        ' /)
         CHARACTER (LEN=40), DIMENSION(0:10) :: &
             SOLNAM = &
              (/ 'BANDED GAUSSIAN ELIMINATION (DIRECT)', &
                 'IC-PRECONDITIONED CONJUGATE GRADIENT', &
-                'ILU-PRECONDITIONED GMRES', &
-                'ILU-PRECONDITIONED ORTHOMIN', &
-                'Hook for additional solver', &
-                '', &
-                '', &
-                '', &
-                '', &
-                '', &
-                '' /)
+                'ILU-PRECONDITIONED GMRES            ', &
+                'ILU-PRECONDITIONED ORTHOMIN         ', &
+                'Hook for additional solver          ', &
+                '                                    ', &
+                '                                    ', &
+                '                                    ', &
+                '                                    ', &
+                '                                    ', &
+                '                                    ' /)
       END MODULE SOLVC
 
       MODULE SOLVN

@@ -3,7 +3,7 @@
 SOURCELOC = 
 UTILITYLOC = 
 NEWMOD = 
-PROGRAM = ..\bin\SUTRA-MS_1.1_x64.exe
+PROGRAM = SUTRA-MS_1.1_x64.exe
 INCDIR= .
 
 # Define the Fortran compiler flags
@@ -28,7 +28,7 @@ F90FLAGS= -O2 -heap-arrays:0 -fpe:0 -traceback
 #debug
 #F90FLAGS= -debug:full -traceback -heap-arrays:0
 
-F90= ifort
+F90= gfortran
 
 
 # 
@@ -50,74 +50,74 @@ USRLIB  =
 # Define all object files which make up sutrams
 
 OBJECTS = \
-        SLAPSolver.obj \
-        MSutraMSPrecision.obj \
-        TecplotIOModule.obj \
-        MFileUnits.obj \
-        MSutraMSErrorHandler.obj \
-        MTotalStorageCalculations.obj \
-        MAutomaticTimeStep.obj \
-        MCommonItems.obj \
-        MUserSpecifiedOutputTime.obj \
-        MSutraHydraulicZones.obj \
-        MSutraStorage.obj \
-        MColumnStorage.obj \
-        MSolverStorage.obj \
-        MTriad2Column.obj \
-        MTecplot.obj \
-        MSpecifiedObservationLocations.obj \
-        MTransientBC.obj \
-        SolverBandedGaussianElimination.obj \
-        NodalProdSorpData.obj \
-        GlobalTriadFormat.obj \
-        Rotate.obj \
-        BoundaryConditionMultipleSpecies.obj \
-        OutputNodeDataToLst_2d.obj \
-        ErrorIO.obj \
-        BandwidthCalculation.obj \
-        SourceMultipleSpecies.obj \
-        InputData2.obj \
-        CloseFiles.obj \
-        ZeroValues.obj \
-        GlobalAn.obj \
-        SutraMSMainProgram.obj \
-        ParseWords.obj \
-        BoundaryCondition1Species.obj \
-        SolverPreparation.obj \
-        Observations.obj \
-        Element_2d.obj \
-        Source.obj \
-        InputData0.obj \
-        BoundaryConditionsInput.obj \
-        Tensor.obj \
-        RotateMatrix.obj \
-        FileOpen.obj \
-        Adsorption.obj \
-        StoreRestartData.obj \
-        OutputNodeDataToLst_3d.obj \
-        BasisCalculations_2d.obj \
-        SLAPSolverWrapper.obj \
-        Nodal.obj \
-        Connectivity.obj \
-        GlobalColumnFormat.obj \
-        BoundaryConditionAssembly.obj \
-        SutraMSSubroutine.obj \
-        PointerSet.obj \
-        Element_3d.obj \
-        Source1Species.obj \
-        OutputNodeData.obj \
-        InputData1.obj \
-        AnisotropicDispersion.obj \
-        TriadFormatSetup.obj \
-        SkipCommment.obj \
-        BudgetCalculation.obj \
-        UserDefinedSubroutines.obj \
-        OutputObservationData.obj \
-        Global27NodeMolecule.obj \
-        BasisCalculations_3d.obj \
-        SutraEnd.obj \
-        OutputVelocityData.obj \
-        DimensionWork.obj \
+        SLAPSolver.o \
+        MSutraMSPrecision.o \
+        MFileUnits.o \
+        TecplotIOModule.o \
+        MSutraMSErrorHandler.o \
+        MTotalStorageCalculations.o \
+        MAutomaticTimeStep.o \
+        MCommonItems.o \
+        MUserSpecifiedOutputTime.o \
+        MSutraHydraulicZones.o \
+        MSutraStorage.o \
+        MColumnStorage.o \
+        MSolverStorage.o \
+        MTriad2Column.o \
+        MTecplot.o \
+        MSpecifiedObservationLocations.o \
+        MTransientBC.o \
+        SolverBandedGaussianElimination.o \
+        NodalProdSorpData.o \
+        GlobalTriadFormat.o \
+        Rotate.o \
+        BoundaryConditionMultipleSpecies.o \
+        OutputNodeDataToLst_2d.o \
+        ErrorIO.o \
+        BandwidthCalculation.o \
+        SourceMultipleSpecies.o \
+        InputData2.o \
+        CloseFiles.o \
+        ZeroValues.o \
+        GlobalAn.o \
+        SutraMSMainProgram.o \
+        ParseWords.o \
+        BoundaryCondition1Species.o \
+        SolverPreparation.o \
+        Observations.o \
+        Element_2d.o \
+        Source.o \
+        InputData0.o \
+        BoundaryConditionsInput.o \
+        Tensor.o \
+        RotateMatrix.o \
+        FileOpen.o \
+        Adsorption.o \
+        StoreRestartData.o \
+        OutputNodeDataToLst_3d.o \
+        BasisCalculations_2d.o \
+        SLAPSolverWrapper.o \
+        Nodal.o \
+        Connectivity.o \
+        GlobalColumnFormat.o \
+        BoundaryConditionAssembly.o \
+        SutraMSSubroutine.o \
+        PointerSet.o \
+        Element_3d.o \
+        Source1Species.o \
+        OutputNodeData.o \
+        InputData1.o \
+        AnisotropicDispersion.o \
+        TriadFormatSetup.o \
+        SkipCommment.o \
+        BudgetCalculation.o \
+        UserDefinedSubroutines.o \
+        OutputObservationData.o \
+        Global27NodeMolecule.o \
+        BasisCalculations_3d.o \
+        SutraEnd.o \
+        OutputVelocityData.o \
+        DimensionWork.o \
 
 install: sutrams
 
@@ -132,19 +132,22 @@ sutrams: $(OBJECTS)
 
 # Pth_Object codes of sutrams
 
-.f.obj:
+.f.o:
 	$(F90) $(F90FLAGS) -c $<
 
-.for.obj:
+.for.o:
 	$(F90) $(F90FLAGS) -c $<
 
-.f90.obj:
+.f90.o:
 	$(F90) $(F90FLAGS) -c $<
 
-.c.obj:
+.F90.o:
+	$(F90) $(F90FLAGS) -c $<
+
+.c.o:
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	- del *.obj del *.mod
+	- del *.o del *.mod
 #
 #  end

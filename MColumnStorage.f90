@@ -132,8 +132,8 @@
           I, K, L, &
           IL, IC, &
           JL, JC
-        integer (I4B) :: &
-          N48
+!        integer (I4B) :: &				!MT: Commented out due to error occur during compiling by gfortran (conflict with "N48" in module "dimx")
+!          N48
         integer (I4B) :: &
           JTRISTRT
 

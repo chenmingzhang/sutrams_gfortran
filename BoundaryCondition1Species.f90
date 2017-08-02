@@ -121,7 +121,8 @@
      &   22X,'S I M U L A T I O N   H A L T E D'/                       &
      &   22X,'_________________________________')                       
 !
-      call ErrorIO('BND1SPE: Actual specified concentration/temperature nodes does not equal NUBC ['//trim(adjustl(Val2Char(SUM(NUBC))))//']')
+      call ErrorIO('BND1SPE: Actual specified concentration/temperature nodes does not equal NUBC &
+['//trim(adjustl(Val2Char(SUM(NUBC))))//']')
 !                                                                       
 !.....RETURN TO CALLING ROUTINE                                         
  6000 RETURN 

@@ -26,10 +26,10 @@
           module procedure Int2Char,Real2Char,Dbl2Char
         end interface Val2Char
 
-        logical             :: LOk
+        logical             :: lok
         logical             :: LNormal
         integer (I4B)       :: ios
-        public MSErrorValue, LOk, LNormal, ios, Val2Char
+        public MSErrorValue, lok, LNormal, ios, Val2Char
 
         contains
           character(len=16) function Int2Char(ival)

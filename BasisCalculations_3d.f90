@@ -273,9 +273,13 @@
  1737 IF (DPDZG) 1740, 1760, 1740 
  1740 IF (DABS (PGZ / DPDZG) - 1.0D-10) 1745, 1745, 1760 
  1745 PGZ = 0.0D0 
- 1760 VXG = - DENOM * (ElemData(ElemMap(L))%permxx * PGX + ElemData(ElemMap(L))%permxy * PGY + ElemData(ElemMap(L))%permxz * PGZ) * RELKG                                                    
-      VYG = - DENOM * (ElemData(ElemMap(L))%permyx * PGX + ElemData(ElemMap(L))%permyy * PGY + ElemData(ElemMap(L))%permyz * PGZ) * RELKG                                                    
-      VZG = - DENOM * (ElemData(ElemMap(L))%permzx * PGX + ElemData(ElemMap(L))%permzy * PGY + ElemData(ElemMap(L))%permzz * PGZ) * RELKG                                                    
+ 1760 continue
+      VXG = - DENOM * (ElemData(ElemMap(L))%permxx * PGX + ElemData(ElemMap(L))%permxy * PGY + &
+ElemData(ElemMap(L))%permxz * PGZ) * RELKG                                                    
+      VYG = - DENOM * (ElemData(ElemMap(L))%permyx * PGX + ElemData(ElemMap(L))%permyy * PGY + &
+ElemData(ElemMap(L))%permyz * PGZ) * RELKG                                                    
+      VZG = - DENOM * (ElemData(ElemMap(L))%permzx * PGX + ElemData(ElemMap(L))%permzy * PGY + &
+ElemData(ElemMap(L))%permzz * PGZ) * RELKG                                                    
       VXG2 = VXG * VXG 
       VYG2 = VYG * VYG 
       VZG2 = VZG * VZG 

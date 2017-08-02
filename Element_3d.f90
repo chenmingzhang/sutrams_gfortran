@@ -136,7 +136,6 @@
             
             II = (L - 1) * N48 + IL 
             I = IN (II)
-
             WRITE (fLST, 400) IN ( (L - 1) * 8 + IL), L, DET (IL) 
   400       FORMAT  (11X,'THE DETERMINANT OF THE JACOBIAN AT NODE ',I9,       &
                          ' IN ELEMENT ',I9,' IS NEGATIVE OR ZERO, ',1PE15.7)          

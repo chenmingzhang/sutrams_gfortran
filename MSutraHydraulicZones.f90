@@ -95,7 +95,7 @@ module SutraZoneModule
   logical function RdZoneData()
     use TotalStorage
 
-    logical :: LOk=.false.
+!    logical :: LOk=.false.				!MT: Commented out due to error occur during compiling by gfortran (conflict with "lok" in mserrorhandler)
     integer (I4B) :: &
       NLSKIP
     integer (I4B) :: &
@@ -148,7 +148,8 @@ module SutraZoneModule
                ProdSorp(n)%chi1(NSPE), &
                ProdSorp(n)%chi2(NSPE), &
                stat=ios)
-      if(ios/=0) call ErrorIO('SutraZoneModule::RdZoneData could not allocate species variables for sorption and production parameter zones')
+      if(ios/=0) call ErrorIO(&
+'SutraZoneModule::RdZoneData could not allocate species variables for sorption and production parameter zones')
     end do
     !Calculate memory requirements
     ios=AddMemory(MemoryIndex('ZON'),'Vec',      4*NodeZones) !NodeData(NodeZones)
@@ -182,7 +183,8 @@ module SutraZoneModule
     read (fZON,*,iostat=ios) i, &
       NodeData(i)%por,NodeData(i)%compma,NodeData(i)%rhos
 
-    if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying nodal zone values for zone entry ['//trim(Val2Char(i))//']')
+    if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying nodal zone values for zone entry ['//trim(Val2Char(i))&
+ //']')
 
     !write out zone data
     write(fLST,'(1x,i10,1x,3(1PD15.5,1x))') &
@@ -190,9 +192,10 @@ module SutraZoneModule
       NodeData(i)%por,NodeData(i)%compma,NodeData(i)%rhos
     goto 1020
     !check that a nodal value has been defined for each nodal zone
-01030&
+01030 continue
     if(nzn/=NodeZones) &
-      call ErrorIO('Error in SutraZoneModule::RdZoneData  - ['//trim(Val2Char(NodeZones))//'] node zones defined but only ['//trim(Val2Char(nzn))//'] zones found in zone file')
+      call ErrorIO('Error in SutraZoneModule::RdZoneData  - ['//trim(Val2Char(NodeZones))//'] node zones defined but only &
+['//trim(Val2Char(nzn))//'] zones found in zone file')
 
 ! READ DATA FOR SORPTION AND PRODUCTION VALUES FOR EACH SPECIES      
     !write header for nodal zones
@@ -217,7 +220,8 @@ module SutraZoneModule
       ProdSorp(i)%prodf0(k), ProdSorp(i)%prods0(k), &
       ProdSorp(i)%prodf1(k), ProdSorp(i)%prods1(k)
 
-    if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying nodal zone values for zone entry ['//trim(Val2Char(i))//']')
+    if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying nodal zone values for zone entry &
+['//trim(Val2Char(i))//']')
 
     !write out zone data
     write(fLST,'(1x,2(i10,1x),6(1PD15.5,1x))') &
@@ -226,9 +230,11 @@ module SutraZoneModule
       ProdSorp(i)%prodf0(k), ProdSorp(i)%prods0(k), &
       ProdSorp(i)%prodf1(k), ProdSorp(i)%prods1(k)
     goto 1040
-01050&
+01050 continue
     if(nzn/=NSPE*NodeZones) &
-      call ErrorIO('Error in SutraZoneModule::RdZoneData  - ['//trim(Val2Char(NSPE*NodeZones))//'] node zones defined for ProdSorp but only ['//trim(Val2Char(nzn))//'] zones found in zone file')
+      call ErrorIO('Error in SutraZoneModule::RdZoneData  - &
+['//trim(Val2Char(NSPE*NodeZones))//'] node zones defined for ProdSorp but only &
+['//trim(Val2Char(nzn))//'] zones found in zone file')
 
     MSErrorValue%cDataSet='ZE1'
     CALL SKPCOM (fZON, NLSKIP) 
@@ -248,7 +254,8 @@ module SutraZoneModule
         ElemData(i)%almax,ElemData(i)%almid,ElemData(i)%almin,&
         ElemData(i)%at1max,ElemData(i)%at1mid,ElemData(i)%at1min,&
         ElemData(i)%lambdas
-      if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying element zone values for zone entry ['//trim(Val2Char(i))//']')
+      if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying element zone values for zone entry &
+['//trim(Val2Char(i))//']')
 !
 !.....Set AT2 = AT1 - Preserve second transverse dispersivity to allow return to original
 !     dispersivity model of Alden Provost
@@ -309,7 +316,8 @@ module SutraZoneModule
         ElemData(i)%almax,ElemData(i)%almin,&
         ElemData(i)%at1max,ElemData(i)%at1min,&
         ElemData(i)%lambdas
-      if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying element zone values for zone entry ['//trim(Val2Char(i))//']')
+      if(ios/=0) call ErrorIO('Error in SutraZoneModule::RdZoneData specifying element zone values for zone entry &
+['//trim(Val2Char(i))//']')
 !                                                                       
 !.....ROTATE PERMEABILITY FROM MAXIMUM/MINIMUM TO X/Y DIRECTIONS        
       radiax = 1.745329D-2 * ElemData(i)%anglex
@@ -355,9 +363,10 @@ module SutraZoneModule
     goto 1120
 
     !check that a element value has been defined for each nodal zone
-01130&
+01130 continue
     if(nze/=ElemZones) &
-      call ErrorIO('Error in SutraZoneModule::RdZoneData  - ['//trim(Val2Char(ElemZones))//'] element zones defined but only ['//trim(Val2Char(nze))//'] zones found in zone file')
+      call ErrorIO('Error in SutraZoneModule::RdZoneData  - &
+['//trim(Val2Char(ElemZones))//'] element zones defined but only ['//trim(Val2Char(nze))//'] zones found in zone file')
 
 
 

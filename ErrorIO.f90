@@ -13,11 +13,11 @@
         character *(*), intent(in)       :: cError
         character (len=40) :: cErrText
         character (len=16), dimension(5) :: &
-          cEType= (/'Unknown',        &
-                        'End of Record',  &
-                        'End of File',    &
-                        'Normal',         &
-                        'Fortran Run-Time'/)
+          cEType= (/'Unknown         ',        &
+                    'End of Record   ',  &
+                    'End of File     ',    &
+                    'Normal          ',         &
+                    'Fortran Run-Time'/)
           !Get error text
           !Call GERROR (cErrText)
           !write error message

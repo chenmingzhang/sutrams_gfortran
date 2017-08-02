@@ -32,6 +32,17 @@
         I, IP, IU, IUP, IQP, IQU, &
         K, &
         NSOPI, NSOUI
+!-----------------------------------------------MT.12.05.2017
+!--------------------------Variables for tidal effect section 
+      INTEGER (I4B) :: &
+        TDINDEX
+	  
+	  REAL, dimension(20000) :: TEMP
+	  INTEGER :: MONTHIND
+		
+	  REAL (DP) :: &
+	    TDLEVEL, MEANTIDE, TDAMP, TDPERIOD
+!------------------------------------------------------------
 
 !.....DEFINITION OF REQUIRED VARIABLES                                  
 ! . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -128,7 +139,92 @@
 !            TIME STEP IN WHICH PBC( ) CHANGES.                         
 !     SpecifiedPBC(IP)%P =  ((          ))                                         
 !     DO 150 K=1,NSPE                                                   
-! 150 SpecifiedPBC(IP)%U(K) =  ((          ))                                       
+! 150 SpecifiedPBC(IP)%U(K) =  ((          ))    
+!---------------------------------------------- MT.11.04.2017
+!------------------------------------- MT.29.05.2017 (Revised)
+!------------------Seasonal variation of seawater temperature
+!!--Pressure--------------------------------------------------   
+	  MEANTIDE = 27                                 ! = 27m for SSF
+	  TDAMP = 1                                     ! = 1m for SSF
+	  TDPERIOD = 12                                 ! = 12 hrs          
+      TDLEVEL=MEANTIDE+TDAMP*SIN(2*3.1415926*THOUR/TDPERIOD)	                        
+!	  SpecifiedPBC(IP)%P = 9.81*1025*(MEANTIDE-Y(IABS(I)))  ! without tidal oscillation
+      IF ((Y(IABS(I))).LE.TDLEVEL)THEN
+        SpecifiedPBC(IP)%P = 9.81*1025*(TDLEVEL-Y(IABS(I)))
+      ELSE 
+        SpecifiedPBC(IP)%P = 0
+      ENDIF
+!--Temperature-----------------------------------------------	  
+      TEMP (1:48) = (/3.3, 7.2, 13.3, 19.4, 25.0, 28.3, 26.7, 22.8, 16.1, 11.1, 6.1, 3.3,&
+ 		      3.3, 7.2, 13.3, 19.4, 25.0, 28.3, 26.7, 22.8, 16.1, 11.1, 6.1, 3.3,&
+		      3.3, 7.2, 13.3, 19.4, 25.0, 28.3, 26.7, 22.8, 16.1, 11.1, 6.1, 3.3,&
+		      3.3, 7.2, 13.3, 19.4, 25.0, 28.3, 26.7, 22.8, 16.1, 11.1, 6.1, 3.3/)
+ 	  DO 150 K=1, NSPE
+      IF(K.EQ.1) THEN
+!         MONTHIND = FLOOR((TMIN-360)/120)+1        ! minus initial time if warm start
+!         MONTHIND = FLOOR((THOUR - 48000)/720)+1   ! field scale seasonal temperature variation
+                                                    ! 720 = number of hour in a month
+                                                    ! 48000 = time to v2ini5 = steady state condition
+!        MONTHIND = FLOOR((THOUR - 36000)/720)+1    ! 36000 = time to v3ini = steady state condition           
+         MONTHIND = FLOOR((THOUR - 24000)/720)+1    ! 24000 = time to v4ini = steady state condition                                                         
+         SpecifiedPBC(IP)%U(K) = TEMP(MONTHIND)
+!--Concentration---------------------------------------------        
+      ELSEIF(K.EQ.2) THEN
+            SpecifiedPBC(IP)%U(K) = 0.0357
+      ENDIF
+  150 END DO   
+!-----------------------------------------------MT.12.05.2017
+!----------Tidal effect --> Changing pressure at sea boundary         
+!--Pressure--------------------------------------------------   
+!        MEANTIDE = 0.55
+!	    TDAMP = 0.05
+!	    TDPERIOD = 120
+
+ !       TDLEVEL=MEANTIDE+TDAMP*SIN(2*3.1415926*TSEC/TDPERIOD)
+        
+ !       IF ((Y(IABS(I))).LE.TDLEVEL)THEN
+ !           SpecifiedPBC(IP)%P = 9.81*1025*(TDLEVEL-Y(IABS(I)))
+ !       ELSE 
+ !           SpecifiedPBC(IP)%P = 0
+ !       ENDIF
+        !WRITE(*,*) IABS(I), Y(IABS(I)), TDLEVEL, SpecifiedPBC(IP)%P
+        !PAUSE        
+!--Temperature-----------------------------------------------	  
+!	  DO 150 K=1, NSPE
+!      IF(K.EQ.1) THEN
+!            SpecifiedPBC(IP)%U(K) = 15
+!--Concentration---------------------------------------------    
+!      ELSEIF(K.EQ.2) THEN
+!            SpecifiedPBC(IP)%U(K) = 0.0357            
+!      ENDIF
+!  150 END DO  
+!------------------------------------------------------------
+!-----------------------------------------------MT.19.06.2017
+!-------------------------------TIDE AND SEASONAL TEMPERATURE         
+!--Pressure--------------------------------------------------   
+!        MEANTIDE = 0.45
+!	    TDAMP = 0.05
+!	    TDPERIOD = 120
+ 
+!        TDLEVEL=MEANTIDE+TDAMP*SIN(2*3.1415926*TSEC/TDPERIOD)
+        
+!        IF ((Y(IABS(I))).LE.TDLEVEL)THEN
+!            SpecifiedPBC(IP)%P = 9.81*1025*(TDLEVEL-Y(IABS(I)))
+!        ELSE 
+!            SpecifiedPBC(IP)%P = 0
+!        ENDIF
+        !WRITE(*,*) IABS(I), Y(IABS(I)), TDLEVEL, SpecifiedPBC(IP)%P
+        !PAUSE        
+!--Temperature-----------------------------------------------	  
+!	  DO 150 K=1, NSPE
+!      IF(K.EQ.1) THEN
+!            SpecifiedPBC(IP)%U(K) = 25
+!--Concentration---------------------------------------------    
+!      ELSEIF(K.EQ.2) THEN
+!            SpecifiedPBC(IP)%U(K) = 0.0357            
+!      ENDIF
+!  150 END DO  
+!------------------------------------------------------------
   200 END DO 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -271,10 +367,12 @@
         SWRES1, SWRES2, AA1, AA2, VN1, VN2 
 !                                                                       
 !     DATA FOR REGION 1:                                                
-      DATA SWRES1 / 0.30E0 /, AA1 / 5.0E-5 /, VN1 / 2.0E0 / 
+!      DATA SWRES1 / 0.30E0 /, AA1 / 5.0E-5 /, VN1 / 2.0E0 / 
+      DATA SWRES1 / 0.1047E0 /, AA1 / 1.48E-4 /, VN1 / 2.68E0 /     !SAND (From ET.INP)
       SAVE SWRES1, AA1, VN1 
 !     DATA FOR REGION 2:                                                
-      DATA SWRES2 / 0.30E0 /, AA2 / 5.0E-5 /, VN2 / 2.0E0 / 
+!      DATA SWRES2 / 0.30E0 /, AA2 / 5.0E-5 /, VN2 / 2.0E0 / 
+      DATA SWRES2 / 0.1047E0 /, AA2 / 1.48E-4 /, VN2 / 2.68E0 /     !SAND (From ET.INP)    
       SAVE SWRES2, AA2, VN2 
 ! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 !                                                                       

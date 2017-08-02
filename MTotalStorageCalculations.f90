@@ -54,7 +54,7 @@
             character (len=IDLen), intent(in) :: cID
             !local
             integer (I4B) :: i
-            lOK=.false.
+            lok=.false.
             MemoryIndex=0
             do i=1,nEntries
               if(index(cID,Memory(i)%ID)>0) then
@@ -64,7 +64,7 @@
             end do
             if(MemoryIndex==0)  &
               call ErrorIO('TotalStorage::MemoryIndex Error could not match '//trim(adjustl(cID))//' in Memory structure')
-            lOK=.true.
+            lok=.true.
 09999&
             return
           end function MemoryIndex
@@ -90,7 +90,8 @@
                 Memory(Index)%Chr=Memory(Index)%Chr+Size*SizeChar
               case default
                 AddMemory=1
-                call ErrorIO('TotalStorage::AddMemory Error could not match '//trim(adjustl(cType))//' as a valid type in Memory structure')
+                call ErrorIO('TotalStorage::AddMemory Error could not match '//trim(adjustl(cType))//'&
+							 as a valid type in Memory structure')			!MT: split line due to error when compiling with gfortran 
             end select
             return
           end function AddMemory
@@ -100,7 +101,7 @@
             use FUNITS
             integer (I4B) :: n
           
-            lOk=.false.
+            lok=.false.
 
             !Calculate Total Storage
             Memory(MemoryIndex('TOT'))%Vec = sum(Memory(1:(nEntries-1))%Vec)
@@ -131,9 +132,9 @@
                      13X, F10.4,1X,'MBytes OF CHARACTERS      WERE ALLOCATED ',/, &
                      13X, F10.4,1X,'Mbytes TOTAL MEMORY WAS USED',//)                          
 
-            lOk=.true.
+            lok=.true.
   09999&            
-            CalculateTotalStorage=lOk
+            CalculateTotalStorage=lok
             return
           end function CalculateTotalStorage
 

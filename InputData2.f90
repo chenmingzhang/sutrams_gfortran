@@ -168,15 +168,28 @@
          IF (I) 700, 700, 730 
   700    SpecifiedPBC(IP)%P = PVEC ( - I) 
   730 END DO 
-!.....INITIALIZE P, U, AND CONSISTENT DENSITY                           
+!.....INITIALIZE P, U, AND CONSISTENT DENSITY        
+!!.....ORIGINAL                   
   740 DO 800 I = 1, NN 
          PM1 (I) = PVEC (I) 
          DO K = 1, NSPE 
            UM1 (I, K) = UVEC (I, K) 
            UM2 (I, K) = UVEC (I, K) 
            RCIT (I) = RCIT (I) + DRWDU (K) * (UVEC (I, K) - URHOW0 (K) ) 
-         ENDDO 
+         END DO 
   800 END DO 
+! 
+!.....MODIFIED BY MT 13.9.2016 - FIX T IN RHO TERMS TO ASSUME DENSITY DOES NOT CHANGE IN HEATED CASES
+!  740 DO 800 I = 1, NN                                                     !MT
+!         PM1 (I) = PVEC (I)                                                !MT
+!         DO K = 1, NSPE                                                    !MT
+!           UM1 (I, K) = UVEC (I, K)                                        !MT
+!           UM2 (I, K) = UVEC (I, K)                                        !MT
+!		   IF (K.EQ.NESP) CYCLE												!MT
+!           RCIT (I) = RCIT (I) + DRWDU (K) * (UVEC (I, K) - URHOW0 (K) )   !MT
+!		   RCIT (I) = RCIT (I) + DRWDU (NESP) * (15 - URHOW0(NESP) )		!MT
+!         END DO                                                            !MT
+!  800 END DO                                                               !MT
 !.....INITIALIZE SATURATION, SW(I)                                      
       CALL ZERO (SW, NN, 1.0D0) 
       CALL ZERO (DSWDP, NN, 0.0D0) 

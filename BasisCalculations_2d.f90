@@ -49,6 +49,7 @@
         RGXGM1, RGYGM1, &
         PITERG, DPDXG, DPDYG, &
         TEQN, &
+!		RHOT, &																	!MT
         DSWDPG, &
         DENOM, &
         PGX, PGY, &
@@ -171,15 +172,27 @@
 !                                                                       
 !.....SET VALUES FOR DENSITY AND VISCOSITY                              
 !.....RHOG = FUNCTION(UITER)                                            
+!.....ORIGINAL
       RHOG = RHOW0 
       DO K = 1, NSPE 
-        RHOG = RHOG + DRWDU (K) * (UITERG (K) - URHOW0 (K) ) 
-	    END DO
+		  RHOG = RHOG + DRWDU (K) * (UITERG (K) - URHOW0 (K) )           			
+	  END DO
+!.....MODIFIED BY MT 13.9.2016 - FIX T IN RHO TERMS TO ASSUME DENSITY DOES NOT CHANGE IN HEATED CASES		
+!     RHOG = RHOW0                                                                      !MT
+!     DO K = 1, NSPE                                                                    !MT
+!		IF (K.EQ.NESP)CYCLE						                                        !MT
+!		RHOG = RHOG + DRWDU (K) * (UITERG (K) - URHOW0 (K) )							!MT
+!		RHOG = RHOG + DRWDU (NESP) * (15 - URHOW0(NESP))                              	!MT
+!	  END DO		                                                                    !MT
+!
 !.....VISCG = FUNCTION(UITER)                                           
 !        VISCOSITY IN UNITS OF VISC0*(KG/(M*SEC))                       
       VISCG = 0.0D0 
       TEQN = 0.0D0 
-      IF (NESP.GT.0) TEQN = VISC0 (NESP) * 239.4D-7 * (10.D0** (248.37D0 / (UITERG (NESP) + 133.15D0) ) )                         
+!.....ORIGINAL
+      IF (NESP.GT.0) TEQN = VISC0 (NESP) * 239.4D-7 * (10.D0** (248.37D0 / (UITERG (NESP) + 133.15D0) ) ) 
+!.....MODIFIED BY MT 13.9.2016 - FIX T IN VISCOSITY TERMS TO ASSUME VISCOSITY DOES NOT CHANGE IN HEATED CASES	  
+!      IF (NESP.GT.0) TEQN = VISC0 (NESP) * 239.4D-7 * (10.D0** (248.37D0 / (15 + 133.15D0) ) )       !MT
       IF (ME) 1300, 1300, 1200 
  1200 VISCG = TEQN 
       GOTO 1400 
@@ -190,8 +203,8 @@
       DO K = 1, NSPE 
          IF (K.EQ.NESP) CYCLE
          VISCG = VISCG + VISC0 (K) * (UITERG (K) - URHOW0 (K) ) 
-      END DO 
- 1400 CONTINUE 
+      END DO
+ 1400 CONTINUE
 !                                                                       
 !.....SET UNSATURATED FLOW PARAMETERS SWG AND RELKG                     
       IF (IUNSAT - 2) 1600, 1500, 1600 

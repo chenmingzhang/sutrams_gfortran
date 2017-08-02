@@ -82,6 +82,8 @@
       ELSE 
          GOTO 180 
       ENDIF 
+	 ! WRITE (*,*) inode, SpecifiedPBC(IPU)%node, SpecifiedPBC(IPU)%P
+	 ! PAUSE
   160 FORMAT(7X,I9,6X,1PD20.13,6X,1PD20.13) 
       GOTO 125 
 !.....SET IPU TO ACTUAL NUMBER OF SPECIFIED PRESSURE NODES              

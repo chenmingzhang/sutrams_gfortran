@@ -15,7 +15,7 @@
         LOGICAL                           :: TecplotAll=.false.
         LOGICAL                           :: ONCETPN=.false.,ONCETPE=.false.
         LOGICAL                           :: LTpP,LTpU,LTpSW,LTpRho,LTpTotalHead,LTpVelocity, &
-                                             LTpPrintVelocity, LTpPrintVelocityAtNodes
+                                             LTpPrintVelocity, LTpPrintVelocityAtNodes, LTpHydCon
         LOGICAL                           :: lInitializeBinary = .false.
         LOGICAL                           :: lObservationsWritten = .false.
         character (len=80)                :: cTPNode, cTPElem, cTPObs
@@ -33,7 +33,7 @@
                TecplotAll, &
                NTPNP,NTPEP, &
                cTPNode, cTPElem, cTPObs, &
-               LTpP,LTpU,LTpSW,LTpRho,LTpTotalHead,LTpVelocity,LTpPrintVelocity, LTpPrintVelocityAtNodes, &
+               LTpP,LTpU,LTpSW,LTpRho,LTpTotalHead,LTpVelocity,LTpPrintVelocity, LTpPrintVelocityAtNodes, LTpHydCon, &
                                                          lObservationsWritten, &
                !for Tecplot Element Data
                AllocateTecplot, &
@@ -173,7 +173,8 @@
               L, &
               N
             INTEGER (I4B)          :: IUNIT
-            REAL (DP), ALLOCATABLE :: TotalHead(:)
+            REAL (DP), ALLOCATABLE :: TotalHead(:), RhoV(:), HYDCON(:)     
+            REAL (DP), ALLOCATABLE :: VelocityHead(:)           
 
 !.............OUTPUT FORMAT STATEMENTS
         100 FORMAT('VARIABLES = "X", "Y"',A) 
@@ -242,7 +243,10 @@
                    CTPVAR = TRIM (ADJUSTL (CTPVAR) ) //TRIM (ADJUSTL (CTPV1) ) 
                  END IF
                ENDIF 
-
+               IF (LTpHydCon) THEN
+                 WRITE (CTPV1, 105) 'CONDUCTIVITY' 
+                 CTPVAR = TRIM (ADJUSTL (CTPVAR) ) //TRIM (ADJUSTL (CTPV1) ) 
+               ENDIF 
 !...............GENERATE APPROPRIATE TITLE for ASCII file
               CTITLE = 'TITLE = "SUTRA: FE VOLUME QUADRILATERAL DATA"' 
               if (N48==8) CTITLE = 'TITLE = "SUTRA: FE VOLUME BRICK DATA"'
@@ -274,20 +278,35 @@
                ENDDO 
             ENDIF 
             IF (LTpRho) THEN 
-               WRITE (IUNIT, 200) (RHO (I), I = 1, NN) 
+               WRITE (IUNIT, 200) (RHO (I), I = 1, NN)
+     210 FORMAT(10X,1PE15.7)    !MT
             ENDIF 
             IF (LTpTotalHead) THEN 
                allocate (TotalHead(NN),stat=ios)
                if(ios/=0)  &
                  call ErrorIO('Tecplot::PrintTecplotNodeData Error allocating real '//&
                             & 'vector for single-precision total head Tecplot output')
-               if(.not.CalculateTotalHead(NN,TotalHead)) goto 9999
+               if(.not.CalculateTotalHead(TotalHead)) goto 9999
                WRITE (IUNIT, 200) (TotalHead(I), I = 1, NN) 
-               deallocate (TotalHead,stat=ios)
+               deallocate (TotalHead,stat=ios)               
                if(ios/=0)  &
                  call ErrorIO('Tecplot::PrintTecplotNodeData Error deallocating real '//&
                             & 'vector for single-precision total head Tecplot output')
             ENDIF 
+!------------------------------------PRINT HYDRAULIC CONDUCTIVITY - 01/6/2017
+!            IF (LTpHydCon) THEN 
+!			   allocate (HYDCON(NE),stat=ios)
+!			   if(ios/=0)  &
+!                 call ErrorIO('Tecplot::PrintTecplotNodeData Error allocating real '//&
+!                            & 'vector for single-precision Hydraulic conductivity Tecplot output')
+!               if(.not.CalculateTotalHead(NN,TotalHead, HYDCON)) goto 9999
+!               WRITE (IUNIT, 200) (HYDCON(I), I = 1, NE) 
+!               deallocate (HYDCON,stat=ios)    
+!               if(ios/=0)  &
+!                 call ErrorIO('Tecplot::PrintTecplotNodeData Error deallocating real '//&
+!                            & 'vector for single-precision Hydraulic conductivity Tecplot output')
+!            ENDIF 
+!----------------------------------------------------------------------------            
             IF (LTpSW) THEN 
                WRITE (IUNIT, 200) (SW (I), I = 1, NN) 
             ENDIF 
@@ -339,6 +358,7 @@
         130 FORMAT('ZONE T="VE_',A,'" I=',A,', F=BLOCK, D=(1,2)')
         140 FORMAT('ZONE T="VE_',A,'" I=',A,', F=BLOCK, D=(1,2,3) ')
         200 FORMAT(10(1PE15.7,1X)) 
+
 
 !.............CODE
             lOK=.false.
@@ -437,42 +457,89 @@
 
 !..........PRIVATE FUNCTIONS
 !..........GENERIC ROUTINE FOR CALCULATING THE TOTAL HEAD
-          logical function CalculateTotalHead(NN,TotalHead)
-            use GRAVEC
-            use SutraStorage, only : Y, Z, RHO, PVEC, UVEC
-            IMPLICIT NONE
+!         logical function CalculateTotalHead(NN,TotalHead)
+!           use GRAVEC
+!           use SutraStorage, only : Y, Z, RHO, PVEC, UVEC
+!           IMPLICIT NONE
 !.............PASSED VARIABLES            
-            integer (I4B), intent(in)               :: NN
-            real (DP), intent(inout), dimension(NN) :: TotalHead
+!           integer (I4B), intent(in)               :: NN
+!            real (DP), intent(inout), dimension(NN) :: TotalHead
 !.............LOCAL VARIABLES            
-            integer (I4B) :: k, n
-            real (DP) :: Gravity
-            real (DP) :: ElevationHead
-            real (DP) :: RhoV
-            CalculateTotalHead=.false.
-            Gravity = -GRAVY
-            if (N48 == 8) Gravity = -GRAVZ
-            do n=1,NN
-              select case (N48)
-                case (4)
-                  ElevationHead = Y(n)
-                case (8)
-                  ElevationHead = Z(n)
+!           integer (I4B) :: k, n
+!           real (DP) :: Gravity
+!           real (DP) :: ElevationHead
+!            real (DP) :: RhoV
+!           CalculateTotalHead=.false.
+!           Gravity = -GRAVY
+!           if (N48 == 8) Gravity = -GRAVZ
+!           do n=1,NN
+!             select case (N48)
+!               case (4)
+!                 ElevationHead = Y(n)
+!               case (8)
+!                 ElevationHead = Z(n)
+!             end select
+!             if (TSEC<=TSTART) then
+!               RhoV = RHOW0 
+!               do k = 1, nspe 
+!                 RhoV = RhoV + DRWDU(k) * ( UVEC(n,k) - URHOW0(k) )                                                             
+!               end do 
+!             else
+!               RhoV = RHO(n)
+!             end if
+!             TotalHead(n)=( PVEC(n) / (RhoV(n) * Gravity) ) + ElevationHead
+!           end do
+!           CalculateTotalHead=.true.
+!
+!-----------------------------------------------------CALCULATE TOTAL HEAD - MT - 01/11/2016
+!----------------------------------TOTAL HEAD SHOULD BE PRESENTED EQUIVALENT FRESHWATER HEAD 
+!..........PRIVATE FUNCTIONS        													   
+!..........GENERIC ROUTINE FOR CALCULATING THE TOTAL HEAD	                               
+          logical function CalculateTotalHead(TotalHead)                                     
+            use GRAVEC
+            use PARAMS
+            use SutraZoneModule                                                                
+            use SutraStorage, only : Y, Z, RHO, PVEC, UVEC, VISCO                             
+            IMPLICIT NONE                                                                  
+!.............PASSED VARIABLES                                                             
+!            integer (I4B), intent(in)               :: NN                                  
+            real (DP), intent(inout), dimension(NN) :: TotalHead                                                  
+!.............LOCAL VARIABLES                                                              
+            integer (I4B) :: n, L                                                                                         			
+            real (DP) :: Gravity                                                           
+            real (DP) :: ElevationHead, h                                                  
+            real (DP) :: RHEAD          	   
+            CalculateTotalHead=.false.                                                     
+            Gravity = -GRAVY                                                               
+            if (N48 == 8) Gravity = -GRAVZ                                                 
+            do n=1,NN                                                                      
+              select case (N48)                                                            
+                case (4)                                                                   
+                  ElevationHead = Y(n)                                                     
+                case (8)                                                                   
+                  ElevationHead = Z(n)                                                     
               end select
-              if (TSEC<=TSTART) then
-                RhoV = RHOW0 
-                do k = 1, nspe 
-                  RhoV = RhoV + DRWDU(k) * ( UVEC(n,k) - URHOW0(k) )                                                             
-                end do 
-              else
-                RhoV = RHO(n)
-              end if
-              TotalHead(n)=( PVEC(n) / (RhoV * Gravity) ) + ElevationHead
+              TotalHead(n)=( PVEC(n) / (RHOW0 * Gravity) ) + ElevationHead                  
             end do
+!------------------------------------------------------------------------------------------            
+!--------------------------------------------------------------CALCULATE K - MT - 01/6/2017
+!---------------------------------------------- ADD "VISCO" to Module SutraStorage to store 
+!--------------------------------------------ADD calculation of VISCOSITY at nodes to NODAL
+!            DO L = 1, NE 
+!                HYDCON(L) = ElemData(ElemMap(L))%permxx
+!                WRITE (*,*), L, HYDCON(L)
+!                PAUSE
+!                DO n = 1, NN
+!	    		    HYDCON(L) = (ElemData(ElemMap(L))%permxx * RHO(n)* 9.81D0)/(VISCO(n))
+!		    	    WRITE (*,*) L, n, (HYDCON(n), n = 1,NN)
+!			        PAUSE				    
+!			    ENDDO			    		    
+!            ENDDO 
+!-----------------------------------------------------------------------------------------
             CalculateTotalHead=.true.
+!            
 !.............RETURN TO CALLING ROUTINE
 09999&
             return
           end function CalculateTotalHead
-
       END MODULE  TECPLOT

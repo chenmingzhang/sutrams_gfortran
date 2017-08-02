@@ -18,7 +18,8 @@
       USE SutraStorage, ONLY: VOL, PMAT, PVEC, UMAT, UVEC, PITER, UITER,  &
                               PM1, UM1, UM2, QIN, UIN, QUIN, &
                               CS1, CS2, CS3, SL, SR, SW,    &
-                              DSWDP, RHO, MIOFF, JTRI
+                              DSWDP, RHO, MIOFF, JTRI, &
+							  VISC0, VISCO
       use SutraMSPrecision
       USE ColumnStorage
       implicit none
@@ -35,7 +36,8 @@
         RELK, SWRHON, &
         AFLN, CFLNT, CFLN, &
         DUDT, EPRS, &
-        ATRN, GTRN, GSV, GSLTRN, GSRTRN, ETRN, QUR, QUL
+        ATRN, GTRN, GSV, GSLTRN, GSRTRN, ETRN, QUR, QUL, &
+		TEQN
 !                                                                       
       IF (IUNSAT.NE.0) IUNSAT = 1 
 !                                                                       
@@ -68,12 +70,37 @@
   120 END DO 
 !.....SET FLUID DENSITY AT NODES, RHO(I)                                
 !     RHO = F (UITER(I))                                                
+!.......ORIGINAL
       DO 150 I = 1, NN 
 !.......CALCULATE FLUID DENSITY BASED ON PARAMETERS FOR EACH SPECIES    
-         RHO (I) = RHOW0 
-         DO 140 K = 1, NSPE 
-  140    RHO(I) = RHO(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) ) 
+		RHO (I) = RHOW0 
+		DO 140 K = 1, NSPE 		 
+		  RHO(I) = RHO(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )
+  140   END DO
   150 END DO 
+!.......MODIFIED BY MT 13.9.2016 - FIX T IN RHO TERMS TO ASSUME DENSITY DOES NOT CHANGE IN HEATED CASES
+!      DO 150 I = 1, NN 
+!		RHO (I) = RHOW0 
+!		DO 140 K = 1, NSPE 		 
+!          IF (K.EQ.NESP) CYCLE														!MT 
+!    	  RHO(I) = RHO(I) + DRWDU(K) * ( UITER(I, K) - URHOW0(K) )        			!MT
+!		  RHO(I) = RHO(I) + DRWDU(NESP) * ( 15  - URHOW0(NESP) ) 	        		!MT
+!  140   END DO
+!  150 END DO 
+!------------------------------------------ CALCULATE VISCOSITY AT NODES - MT - 01/6/2017
+	  DO 170 I = 1, NN	
+		VISCO(I) = 0.0D0
+		IF (NESP.GT.0) TEQN = VISC0 (NESP) * 239.4D-7 * (10.D0** (248.37D0 / (UITER (I, NESP) + 133.15D0) ) ) 
+		DO 160 K = 1, NSPE
+		    IF (K.EQ.NESP) CYCLE
+			VISCO(I) = VISCO(I) + VISC0 (K) * (UITER (I, K) - URHOW0 (K) ) 
+160		ENDDO		
+		VISCO (I) = VISCO(I) + TEQN
+!		WRITE(*,*) I, TEQN, VISCO(I)
+!		PAUSE
+170	  ENDDO
+!---------------------------------------------------------------------------------------
+	  
   200 CONTINUE 
 !                                                                       
       DO 1000 I = 1, NN 
@@ -112,7 +139,7 @@
 !.....CALCULATE CELLWISE TERMS FOR U-EQUATION                           
   230    EPRS = (1.D0 - NodeData(imap)%por ) * NodeData(imap)%rhos 
          ATRN = (1 - ISSTRA) * (NodeData(imap)%por * SWRHON * CW + EPRS * CS1(I, KSP) ) * &
-                VOL(I) / DELTU                                       
+                VOL(I) / DELTU
 !         GTRN = NodeData(imap)%por * SWRHON * PRODF1 (KSP) * VOL (I) 
 !         GSV = EPRS * PRODS1 (KSP) * VOL (I) 
          GTRN = NodeData(imap)%por * SWRHON * ProdSorp(imap)%prodf1(KSP) * VOL (I) 

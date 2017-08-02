@@ -75,7 +75,7 @@
          GUL = 0.0D0 
          IF ( QPLITR(IP) ) 360, 360, 340 
   340    GUL = - CW  * QPLITR(IP) 
-         GUR = - GUL * SpecifiedPBC(IP)%U(KSP) 
+         GUR = - GUL * SpecifiedPBC(IP)%U(KSP)
   360    IF (NOUMAT) 370, 370, 380 
   370    UMAT (IMID, JMID) = UMAT (IMID, JMID) - GUL 
   380    UVEC (I, KSP) = UVEC (I, KSP) + GUR 

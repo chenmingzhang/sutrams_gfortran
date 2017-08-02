@@ -74,8 +74,10 @@
           character*(*) S
         END FUNCTION tecusr
 
-        INTEGER*4 FUNCTION tecend 
+        INTEGER*4 FUNCTION tecend &
+	 (S)					!MT: Added due to compiling problem with gfortran
           !MS$ATTRIBUTES STDCALL :: tecend
+          !MS$ATTRIBUTES REFERENCE :: S		!MT: Added due to compiling problem with gfortran
         END FUNCTION tecend
 
         INTEGER*4 FUNCTION tecgeo &

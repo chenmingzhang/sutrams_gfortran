@@ -314,6 +314,11 @@
          DO 7000 KG = 1, 4 
             ESWG = PORG (KG) * SWG (KG) 
             RHOCWG = RHOG (KG) * CW 
+!!.....MODIFIED BY MT - 28.9.2016 - CHECK CW, SWG, PORG, RHOG             
+!			IF (KSP.EQ.2)THEN
+!			    WRITE(*,*) KSP, CW, SWG, PORG, RHOG
+!			    PAUSE
+!			ENDIF
             ESRCG = ESWG * RHOCWG 
             IF (VGMAG (KG) ) 6300, 6300, 6600 
  6300       EXG (KG) = 0.0D0 
@@ -360,20 +365,38 @@
             DXYG = (DLG - DTG) * VXVG * VYVG 
             DYXG = DXYG 
 !                                                                       
-!.....IN-PARALLEL CONDUCTIVITIES (DIFFUSIVITIES) FORMULA                
- 6900       IF (KSP.EQ.NESP) THEN 
+!.....IN-PARALLEL CONDUCTIVITIES (DIFFUSIVITIES) FORMULA   
+!.....MODIFIED BY MT 23.9.2016- SUPPRESS THERMAL CONDUCTIVITY TO LEVEL OF SOLUDE DIFFUSIVITY
+!6900       IF (KSP.EQ.NESP) THEN 
+!!..........FOR ENERGY TRANSPORT:                                        
+!!.............REDUCE TO LEVEL OF SOLUDE DIFFUSIVITY
+!!              ESE = PORG (KG) * SWG (KG) * RHOG (KG) * SIGMAW(2) 
+!!.............REMOVE COMPLETELY
+!              ESE = 0              
+!           ELSE 
+!!..........FOR SOLUTE TRANSPORT:                                        
+!!              ESE = ESRCG * SIGMAW(KSP) 
+!              ESE = 0    
+!   		   ENDIF 
+!!		   IF (KSP.EQ.NESP)THEN
+!!		       WRITE(*,*) KSP, CW, ESE
+!!		       PAUSE
+!!		   ENDIF
+!-------------------------------------------------------------------------------------------
+!!.....ORIGINAL           
+6900       IF (KSP.EQ.NESP) THEN 
 !..........FOR ENERGY TRANSPORT:                                        
-               if(LVolAvgLambda) then
-                 ESE = ESWG * SIGMAW(KSP) + (1D0 - PORG (KG) ) * ElemData(ElemMap(L))%lambdas  !Volumetric Average
-               else
-                 !lambda(bulk) = (la^(1-SW) * lw^Sw)^por * ls(1-por)
-                 !lambda(air)  = 0.026 W/(m degC) - parameter in PARAMS
-                 ESE = (SigmaAir**(1-SWG(KG)) * SIGMAW(KSP)**SWG(KG))**PORG(KG) * (ElemData(ElemMap(L))%lambdas**(1D0-PORG(KG)))       !Geometric Mean
-               end if
-            ELSE 
+              if(LVolAvgLambda) then
+                ESE = ESWG * SIGMAW(KSP) + (1D0 - PORG (KG) ) * ElemData(ElemMap(L))%lambdas  !Volumetric Average
+              else
+                !lambda(bulk) = (la^(1-SW) * lw^Sw)^por * ls(1-por)
+                !lambda(air)  = 0.026 W/(m degC) - parameter in PARAMS
+                ESE = (SigmaAir**(1-SWG(KG)) * SIGMAW(KSP)**SWG(KG))**PORG(KG) * (ElemData(ElemMap(L))%lambdas**(1D0-PORG(KG)))       !Geometric Mean
+              end if
+           ELSE 
 !..........FOR SOLUTE TRANSPORT:                                        
-               ESE = ESRCG * SIGMAW(KSP) 
-            ENDIF 
+              ESE = ESRCG * SIGMAW(KSP) 
+           ENDIF 
 !.....ADD DIFFUSION AND DISPERSION TERMS TO TOTAL DISPERSION TENSOR     
             BXXG (KG) = ESRCG * DXXG + ESE 
             BXYG (KG) = ESRCG * DXYG 

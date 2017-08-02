@@ -536,7 +536,9 @@
 !.....ASSIGN UNIT NUMBERS AND OPEN FILE UNITS FOR THIS SIMULATION       
       write (*,*) 'Opening input files...'
       CALL FOPEN()
-!                                                                       
+!                        
+	  OPEN(3,FILE='HEAD.DAT')       														!MT
+	  
 !.....OUTPUT BANNER                                                     
       WRITE (fLST, 110)
   110 FORMAT(1H1,131(1H*)////3(132(1H*)////)////                        &
@@ -764,7 +766,8 @@
 
       !check for consistency between NOBS and presence of fSOB(specified obs. locations)
       if (fSOB>0 .and. NOBS>0) &
-        call ErrorIO('Error: Observation points cannot be specified in main input file if Specified Observation Locations are being used')
+        call ErrorIO('Error: Observation points cannot be specified &
+in main input file if Specified Observation Locations are being used')
       !allocate storage and initialize SOB arrays
       if (fSOB>0) then
         write (*,*) 'Reading Specified Observation Location data...'

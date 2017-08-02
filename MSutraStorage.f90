@@ -49,7 +49,8 @@
             VMAG(:),  VANG1(:),  VANG2(:), &
           GXSI(:,:), GETA(:,:), GZET(:,:), &
              VOL(:), PMAT(:,:),   PVEC(:), UMAT(:,:), &
-             PM1(:),  PITER(:),   RCIT(:), RCITM1(:) 
+             PM1(:),  PITER(:),   RCIT(:), RCITM1(:), & 
+             VISCO(:)         								!MT 
        !SMS DIMENSIONS
          integer(I4B), allocatable :: &
            IQSOU(:,:), IUBC(:,:), &
@@ -79,7 +80,8 @@
              RCIT_(:), &
              CS1_(:,:), &
              SW_(:), &
-             QPLITR_(:)
+             QPLITR_(:), &            
+             VISCO_(:)
 
          public &
            IQSOP, IPBC, IN, &
@@ -116,6 +118,7 @@
            CS1_, &
            SW_, &
            QPLITR_, &
+           VISCO_, &
 !
            SpecifiedPBC, &
            MultiSpeciesBC, &
@@ -144,6 +147,7 @@
                lOk=.false.
 
                 NCOLMX = 10 + NSPE-1 !for JCOLS - 9 CHANGED TO 10 FOR VERSION 1.1
+!                NCOLMX = 11 + NSPE-1 !for JCOLS - 9 CHANGED TO 10 FOR VERSION 1.1	!HYDCON 01/6/2017
                 !ALLOCATE MODULE ARRAYS
                 !*** Add additional allocated variables in memory calculations below
                 allocate ( &
@@ -283,6 +287,7 @@
                   GXSI(NE, N48), GETA(NE, N48), GZET(NEX, N48), &
                   VOL(NN), PVEC(NN), &
                   PM1(NN), PITER(NN), RCIT(NN), RCITM1(NN), &
+				  VISCO(NN), &										
                 !start SMS DIMENSIONS
                   IQSOU(MNSOU, NSPE), IUBC(NBCN, NSPE), &
                   NOCONU(NSPE), &
@@ -325,6 +330,7 @@
                 ios=AddMemory(MemoryIndex('SUT'),'Vec',        NN) !PITER(NN)
                 ios=AddMemory(MemoryIndex('SUT'),'Vec',        NN) !RCIT(NN)
                 ios=AddMemory(MemoryIndex('SUT'),'Vec',        NN) !RCITM1(NN)
+                ios=AddMemory(MemoryIndex('SUT'),'Vec',        NN) !VISCO(NN)               
                 !start SMS DIMENSIONS
                 ios=AddMemory(MemoryIndex('SUT'),'Irr',MNSOU*NSPE) !IQSOU(MNSOU, NSPE)
                 ios=AddMemory(MemoryIndex('SUT'),'Irr', NBCN*NSPE) !IUBC(NBCN, NSPE)
@@ -360,6 +366,7 @@
                               CS1_(NN, NSPE), &
                               SW_(NN), &
                               QPLITR_(NBCN), &
+							  VISCO_(NN), &
                               stat=ios ) 
                   !*** Add additional allocated variables in memory calculations below
                   if(ios/=0) goto 9999
@@ -372,6 +379,7 @@
                   ios=AddMemory(MemoryIndex('ATS'),'Arr',   NSPE*NN) !CS1_(NN, NSPE)
                   ios=AddMemory(MemoryIndex('ATS'),'Vec',        NN) !SW_(NN)
                   ios=AddMemory(MemoryIndex('ATS'),'Vec',      NBCN) !QPLITR_(NBCN)
+                  ios=AddMemory(MemoryIndex('ATS'),'Vec',      NN)   !VISCO_(NN)				  
                 end if
                 !allocate storage for specified pressure BC data
                 allocate (SpecifiedPBC(NPBC),stat=ios)
