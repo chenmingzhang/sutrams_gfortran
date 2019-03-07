@@ -24,7 +24,8 @@ INCDIR= .
 #F90= gfortran
 
 #release
-F90FLAGS= -O2 -heap-arrays:0 -fpe:0 -traceback
+#F90FLAGS= -O2 -heap-arrays:0 -fpe:0 -traceback
+F90FLAGS= -O3
 #debug
 #F90FLAGS= -debug:full -traceback -heap-arrays:0
 

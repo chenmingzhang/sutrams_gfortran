@@ -1,0 +1,44 @@
+SUBROUTINE INPUTET ()
+! THE SUBROUTINE IS USED TO READ THE "ET.INP" FILE
+! DATA CONTAINED IN THE FILE INCLUDE:
+! 1 -- TIDAL PARAMETERS
+! 2 -- PERTURBATION OF PERMEABILITY FIELD
+! 3 -- SOIL RETENTION CURVE PARAMETERS
+
+  USE M_SWCC
+  USE M_TIDE
+  USE M_CONTROL
+  USE M_SEEPAGE
+  USE M_SEASONALT
+  IMPLICIT NONE
+  INTEGER(4) :: fET
+  INTEGER(4) :: NLSKIP
+  INTEGER(4):: IOS
+  
+ 
+  fET=1221
+  OPEN(UNIT=fET,FILE='ET.INP',STATUS='OLD')
+  
+  CALL SKPCOM (fET, NLSKIP)
+  READ (fET,*,iostat=ios) TASP,TANE,TPSP,TPNP,TM,RHOST,SC,BNDSWT,FWT,FWH
+  if(ios/=0) call ErrorIO('Error reading tide parameters')
+
+  CALL SKPCOM (fET, NLSKIP)
+  READ (fET,*,iostat=ios) SST5,SST4,SST3,SST2,SST1,SST0,TIMTH
+  if(ios/=0) call ErrorIO('Error reading SEASONAL TEMPERATURE parameters')
+
+  CALL SKPCOM (fET, NLSKIP)
+  READ (fET,*,iostat=ios) SWRES1,AA1,VN1,SWRES2,AA2,VN2
+  if(ios/=0) call ErrorIO('Error reading SWCC parameters')
+  
+  CALL SKPCOM (fET, NLSKIP)
+  READ (fET,*,iostat=ios) AVGVEL,NSTEP,TLAB,HOMO,AMP
+  if(ios/=0) call ErrorIO('Error reading CONTROL parameters')
+  
+  CALL SKPCOM (fET, NLSKIP)
+  READ (fET,*,iostat=ios) SEEP,XSTART,ZSTART
+  if(ios/=0) call ErrorIO('Error reading SEEPAGE parameters')
+
+RETURN
+
+END SUBROUTINE
