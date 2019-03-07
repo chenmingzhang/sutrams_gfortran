@@ -1,0 +1,69 @@
+## THE FILE IS USED TO AVOID HARD CODING TO THE ORIGINAL SOURCE CODE OF SUTRA_MS
+## AS MUCH AS POSSIBLE. IN THAT CASE, ALL THE SIMULATIONS CAN USE THE SAME CODE
+## AND USERS ONLY NEED TO CAHNGE THE VALUES OF FOLLOWING PARAMETERS ACCORDING TO
+## THEIR NEEDS
+##
+##      EEEEEEEEEEEEE     TTTTTTTTTTTTT
+##      EE                     TT
+##      EE                     TT
+##      EE                     TT
+##      EEEEEEEEEEEEE          TT
+##      EE                     TT
+##      EE                     TT
+##      EE                     TT
+##      EEEEEEEEEEEEE          TT
+## -----------------------------------------------------------------------------------
+##
+##  M_TIDE
+##  TASP   -- SPRING TIDAL AMPLITUDE[M]; 
+##  TANE   -- NEAP TIDAL AMPLITUDE [M];
+##  TPSP   -- TIDAL PERIOD OF SPRING TIDE[S]; 
+##  TPNP   -- TIDAL PERIOD OF NEAP TIDE[S]; 
+##  TM     -- MEAN TIDAL LEVEL[M]; 
+##  RHOST  -- THE DENSITY FOR TIDE WATER [KG/M3]; 
+##  SC     -- SALINITY OF THE SEAWATER;[MG/L] 
+##  SWT	   -- SEAWATER TEMPERATURE [C];
+##  FWT	   -- FRESHWATER TEMPERATURE [C];
+##  FWH	   -- CONSTANT HEAD ON FRESHWATER BOUNDARY [M];
+##  [TASP]   [TANE]  [TPSP]    [TPNP]   [TM]   [RHOST]    [SC]		[SWT]	[FWT]	[FWH]
+    0.0585    0       114      44712.0  0.704   1025.0    0.035		25	    25		0.724
+## -----------------------------------------------------------------------------------
+##  M_SEASONALT
+##  SEASONAL TEMPERATURE VARIATION
+##  THE COEFFICIENTS ARE FITTING VALUE FROM EXCEL USING PRACTICAL MEASURED DATASET (POLYNOMIAL 5TH ORDER)
+##  SST#  -- COEFFICIENT CORRESPONDING TO #ORDER ELEMENTS (EX: SST5 - COEFFICIENT OF X^5)
+##  TIMTH -- TIME EQUIVALENT TO 1 MONTH PERIOD IN PRACTICAL SCALE (S)
+##  [SST5]		[SST4]		[SST3]		[SST2]		[SST1]		[SST0]		[TIMTH]
+	0.0028		-0.0708		0.4779		-0.2661		-0.3606		2.7075		7200.0	
+## -----------------------------------------------------------------------------------
+##	  
+##  M_SWCC
+##  USING EACH PARAMETERS ARE CONTROLLED BY NREG AND LREG AT DATASET 14 AND DATASET 15
+##  THE UNIT OF AA1[M-1], PHY0[M] AND PHYB[M] !
+##  FOR EXAMPLE: 0.0007654 [PA] * 9800 [m/s2 kg/m3] = 7.508 [1/m]
+##  SUCH CONVERSION IS TO ASSIST THE 
+##  ECTO--- ESSENTRICITY AND TORTUOSITY THE DEFAULT VALUE IS 0.5
+##  [SWRES1]  [AA1]   [VN1]    [SWRES2]   [AA2]    [VN2]  
+    0.05     10.78    6.0     0.05     10.78    6.0
+##
+## -----------------------------------------------------------------------------------
+##
+##  M_CONTROL
+##  AVEGEL -- OUTPUT TIDALLY-AVERAGE VELOCITY WHEN 1, OTHERWISE NOT
+##  NSTEP  -- NUMBER OF TIME STEPS IN A TIDAL CYCLE
+##  TLAB   -- READ EXPERIMENT TIDE SIGNAL WHEN 1, OTHERWISE USE M_TIDE
+##  HOMO   -- HOMOGENEOUS WHEN 0, OTHERWISE HETEROGENEOUS WHEN 1
+##  AMP    -- AMPLITUDE OF HETEROGENEITY
+##  [AVGVEL] [NSTEP] [TLAB] [HOMO] [AMP]
+       0       180     0      0     0
+##
+## -----------------------------------------------------------------------------------
+##
+##  M_SEEPAGE
+##  SEEP   -- OUTPUT SEEPAGE NODES WHEN 1, OTHERWISE NOT
+##  XSTART -- INITIAL X-COORDINATE OF SEEPAGE NODE
+##  XSTART -- INITIAL Z-COORDINATE OF SEEPAGE NODE
+##  [SEEP] [XSTART] [ZSTART]
+      1        0        0
+##
+## -----------------------------------------------------------------------------------

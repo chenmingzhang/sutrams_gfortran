@@ -1,0 +1,24 @@
+LABTIDE_average(ts,nfwbc,nswbc)
+% ts - Total number of timestep to parse data (in this Ex: 114 secs)
+% nfwbc = nfwbc; % Number of pressure-specified nodes of the freshwater boundary (in this Ex: 0, flux control)
+% nswbc = nswbc; % Number of pressure-specified nodes of the saltwater boundary (in this Ex: 421)
+
+PLOT CONTOUR
+LABTIDE_contour(param,ts)
+% ts - the timestep number whose data will be based on to plot contour
+% param - Choose data to be plotted (4: pressure; 5: species #1; 6: species #2; etc.)
+
+PLOT VELOCITY VECTORS
+LABSLP_quiver(ts,scale)
+% ts - the timestep number whose data will be based on to plot velocity vectors
+% scale - Scale the size of velocity vectors
+
+PLOT STREAMLINE FROM A SPECIFIED POINT
+LABTIDE_streamline(ts,startx,startz)
+% ts - the timestep number whose data will be based on to plot streamline
+% startx - x coordinate of the starting point
+% startz - z coordinate of the starting point
+
+
+	
+   
