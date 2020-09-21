@@ -21,3 +21,4 @@ After this, you will be able to copy *SutraMS_tide.bat* into any of your simulat
 
 https://www.youtube.com/watch?v=LEgg3jDhf4E&t=93s&ab_channel=ChenmingZhang
 
+Nguyen, Thuy T.M., Yu, Xiayang, Pu, Li, Xin, Pei, Zhang, Chenming, Barry, D.A. and Li, Ling (2020). Effects of temperature on tidally influenced coastal unconfined aquifers. Water Resources Research, 56 (4) e2019WR026660 doi: 10.1029/2019wr026660
