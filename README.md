@@ -17,3 +17,7 @@ The way to add path into system enviroment variables can be found from here:
 https://superuser.com/questions/949560/how-do-i-set-system-environment-variables-in-windows-10
 
 After this, you will be able to copy *SutraMS_tide.bat* into any of your simulation folders and run the simulation by double clicking the file.
+
+
+https://www.youtube.com/watch?v=LEgg3jDhf4E&t=93s&ab_channel=ChenmingZhang
+
